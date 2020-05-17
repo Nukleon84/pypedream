@@ -18,7 +18,7 @@ class Equation(object):
                 self.exploreVariables(child)
         return
    
-    def residual(self):
+    def residual(self):        
         return self.rhs.eval()
     
     def reset(self):

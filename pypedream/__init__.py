@@ -12,3 +12,4 @@ from . unitsofmeasure.unitset import PhysicalDimension, UnitSet, UnitSetDefault,
 
 from . numerics.scalar_methods import ScalarMethods
 from . numerics.algebraic_system import AlgebraicSystem
+from . numerics.newton_solver import NewtonSolver

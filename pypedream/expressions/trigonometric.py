@@ -10,7 +10,7 @@ class Sin(UnaryExpression):
         return math.sin(self.argument.eval())
 
     def diff(self, variable):
-        return self.argument.diff(variable)*Cos(self.argument.eval()) 
+        return self.argument.diff(variable)*math.cos(self.argument.eval()) 
 
 class Cos(UnaryExpression):
     
@@ -21,7 +21,7 @@ class Cos(UnaryExpression):
         return math.cos(self.argument.eval())
 
     def diff(self, variable):
-        return -self.argument.diff(variable)*Sin(self.argument.eval())     
+        return -(self.argument.diff(variable)*math.sin(self.argument.eval()))     
 
 class Sinh(UnaryExpression):
     
@@ -32,7 +32,7 @@ class Sinh(UnaryExpression):
         return math.sinh(self.argument.eval())
 
     def diff(self, variable):
-        return self.argument.diff(variable)*Cosh(self.argument.eval()) 
+        return self.argument.diff(variable)*math.cosh(self.argument.eval()) 
 
 class Cosh(UnaryExpression):
     
@@ -43,7 +43,7 @@ class Cosh(UnaryExpression):
         return math.cosh(self.argument.eval())
 
     def diff(self, variable):
-        return -self.argument.diff(variable)*Sinh(self.argument.eval())         
+        return -(self.argument.diff(variable)*math.sinh(self.argument.eval()))         
 
 class Tan(UnaryExpression):
     
@@ -75,7 +75,7 @@ class Coth(UnaryExpression):
         return calculateCoth(self.argument.eval())
 
     def diff(self, variable):
-        return -(calculateCosech(self.argument.eval()))**2 * self.argument.diff(variable)        
+        return -((calculateCosech(self.argument.eval()))**2 * self.argument.diff(variable))        
 
 class Tanh(UnaryExpression):
         

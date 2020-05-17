@@ -6,7 +6,7 @@ class Expression(object):
         self.children=[]
 
     def eval(self):
-        if(math.isnan(self.value)):
+        if(math.isnan(self.value)):            
             self.value=self.fullEvaluate()
         return self.value
 
@@ -75,6 +75,8 @@ class Expression(object):
 
     def __str__(self):
         return self.print()
+    def __repr__(self):        
+        return self.print()
 
 class Literal(Expression):
     def __init__(self, value):
@@ -91,6 +93,11 @@ class Literal(Expression):
     def fullEvaluate(self):
         return self.value
 
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()
+
 
 class UnaryExpression(Expression):
     
@@ -101,6 +108,10 @@ class UnaryExpression(Expression):
         self.symbol=symbol
     def print(self):
         return f"{self.symbol}({self.argument.print()})"
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()        
 
 class BinaryExpression(Expression):
     
@@ -113,6 +124,10 @@ class BinaryExpression(Expression):
         self.symbol=symbol
     def print(self):
         return f"{self.left.print()} {self.symbol} {self.right.print()}"
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()        
 
 class BinaryFunction(BinaryExpression):
     
@@ -120,7 +135,10 @@ class BinaryFunction(BinaryExpression):
         super(BinaryFunction,self).__init__(symbol, left, right)        
     def print(self):
         return f"{self.symbol}({self.left.print()}, {self.right.print()})"
-
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()
 
 
 class Addition(BinaryExpression):
@@ -133,6 +151,10 @@ class Addition(BinaryExpression):
 
     def diff(self, variable):
         return self.left.diff(variable)+self.right.diff(variable)
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()        
 
 class Subtraction(BinaryExpression):
 
@@ -140,10 +162,14 @@ class Subtraction(BinaryExpression):
        super(Subtraction,self).__init__('-',left,right)
 
     def fullEvaluate(self):
-        return self.left.eval()-self.right.eval()    
+        return (self.left.eval())- (self.right.eval())   
     
     def diff(self, variable):
-        return self.left.diff(variable)-self.right.diff(variable)    
+        return (self.left.diff(variable))-(self.right.diff(variable))    
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()
 
 class Multiplication(BinaryExpression):
 
@@ -155,6 +181,10 @@ class Multiplication(BinaryExpression):
     
     def diff(self, variable):
         return self.left.diff(variable)*self.right.eval()+self.left.eval()*self.right.diff(variable)
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()        
 
 class Division(BinaryExpression):
 
@@ -166,6 +196,10 @@ class Division(BinaryExpression):
     
     def diff(self, variable):
         return (self.left.diff(variable)*self.right.eval()-self.left.eval()*self.right.diff(variable))/ (self.right.eval()**2)
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()        
 
       
 class Power(BinaryExpression):
@@ -179,6 +213,10 @@ class Power(BinaryExpression):
     def diff(self, variable):
         return (self.right.eval()*(self.left.eval()**(self.right.eval()-1))*self.left.diff(variable)
             +(self.left.eval()**self.right.eval())*math.log(self.right.eval())*self.right.diff(variable))
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()            
 
 class Negate(UnaryExpression):
     
@@ -189,4 +227,8 @@ class Negate(UnaryExpression):
         return -self.argument.eval()
 
     def diff(self, variable):
-        return -self.argument.diff(variable) 
+        return -(self.argument.diff(variable)) 
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()        
