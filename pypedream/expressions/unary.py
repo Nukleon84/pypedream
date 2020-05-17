@@ -45,4 +45,6 @@ class Par(UnaryExpression):
         return self.argument.eval()
 
     def diff(self, variable):
-        return self.argument.diff(variable)        
+        return self.argument.diff(variable)       
+
+    

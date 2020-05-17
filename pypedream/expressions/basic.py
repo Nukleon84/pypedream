@@ -69,6 +69,9 @@ class Expression(object):
         if(isinstance(other, int) or isinstance(other, float)):
             other=Literal(other) 
         return Power(other, self) 
+    
+    def __neg__(self):
+        return Negate(self)
 
     def __str__(self):
         return self.print()
@@ -177,3 +180,13 @@ class Power(BinaryExpression):
         return (self.right.eval()*(self.left.eval()**(self.right.eval()-1))*self.left.diff(variable)
             +(self.left.eval()**self.right.eval())*math.log(self.right.eval())*self.right.diff(variable))
 
+class Negate(UnaryExpression):
+    
+    def __init__(self, argument):
+       super(Negate,self).__init__('-',argument)
+
+    def fullEvaluate(self):
+        return -self.argument.eval()
+
+    def diff(self, variable):
+        return -self.argument.diff(variable) 

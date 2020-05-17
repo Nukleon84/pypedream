@@ -30,10 +30,6 @@ The thermodynamics methods implemented in this libary are part of the IKCAPE the
     * Newton-Raphson Solver [ ]
     * Dulmage Mendelsohn Decomposition [ ]
 
- * Dynamic Simulation ? (under consideration)
-    * Backwards Euler Integrator [ ]
-    * BDF2 Integrator with Adaptive Stepsize [ ]
-
 * Thermodynamics: 
     * Substances [ ]
     * PropertyPackages [ ]
@@ -47,6 +43,10 @@ The thermodynamics methods implemented in this libary are part of the IKCAPE the
     * Distillation Column [ ]
     * Reactor [ ]
     * Rate-based Distillation [ ]
+ 
+ * Dynamic Simulation ? (under consideration)
+    * Backwards Euler Integrator [ ]
+    * BDF2 Integrator with Adaptive Stepsize [ ]    
 
 ## Getting Started
 
