@@ -1,7 +1,9 @@
-from pypedream import  AlgebraicSystem, Equation, Variable, Constant, Addition, Subtraction, Multiplication, Division, Unit, SI, METRIC,PhysicalDimension, UnitSet, UnitSetDefault, UnitSetSI
+from pypedream import  AlgebraicSystem, Equation, Variable,  Addition, Subtraction, Multiplication, Division, Unit, SI, METRIC,PhysicalDimension, UnitSet, UnitSetDefault, UnitSetSI
 from pypedream import ScalarMethods as scalar
 from pypedream import NewtonSolver
 from pypedream import Sin, Cos, Exp
+from pypedream.thermodynamics import PureComponentFunctionFactory, Substance
+import pypedream.thermodynamics as thermo
 import pypedream as sym
 import pytest
 import math
@@ -78,6 +80,20 @@ from mpl_toolkits.mplot3d import Axes3D
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(xs=x1values, ys=x2values, zs=x3values)
-ax.scatter3D(x1values, x2values, x3values);
-plt.show()
+ax.scatter3D(x1values, x2values, x3values)
+#plt.show()
 
+T= Variable("T", 273.15, SI.K)
+print(T.quantity())
+T.displayUnit=METRIC.C
+print(T.quantity())
+
+water= Substance("Water", "H2O", 18.01)
+
+water.addFunction(thermo.Properties.LiquidHeatCapacity, thermo.FunctionTypes.Polynomial, 150,550, [4.18, 1e-3, 2.124], SI.K, SI.J/SI.mol/SI.K)
+factory=thermo.PureComponentFunctionFactory()
+
+fdesc=water.functions[thermo.Properties.LiquidHeatCapacity]
+
+f1=factory.createFunction(fdesc,T)
+print(f1)

@@ -12,6 +12,9 @@ class Unit(object):
     def __str__(self):
         return self.symbol
 
+    def __repr__(self):
+        return self.__str__()
+
     def __mul__(self, other): 
         newDims=[0,0,0,0,0,0,0,0]          
         for i in range(8):
