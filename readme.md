@@ -27,12 +27,12 @@ The thermodynamics methods implemented in this libary are part of the IKCAPE the
 * Numerics
     * Scalar Newton-Raphson [x]
     * Scalar Bisection [x]
-    * Newton-Raphson Solver [ ]
+    * Newton-Raphson Solver [x]
     * Dulmage Mendelsohn Decomposition [ ]
 
 * Thermodynamics: 
-    * Substances [ ]
-    * PropertyPackages [ ]
+    * Substances [x]
+    * PropertyPackages [x]
     * Flash Routines [ ]
     * IKCAPE Neutral File Importer [ ]
     * ChemSep Database Adapter [ ]
