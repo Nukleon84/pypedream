@@ -2,13 +2,14 @@ from pypedream import  AlgebraicSystem, Equation, Variable,  Addition, Subtracti
 from pypedream import ScalarMethods as scalar
 from pypedream import NewtonSolver
 from pypedream import Sin, Cos, Exp
-from pypedream.thermodynamics import PureComponentFunctionFactory, Substance
+from pypedream.thermodynamics import PureComponentFunctionFactory, Substance,ThermodynamicSystem
 import pypedream.thermodynamics as thermo
 import pypedream as sym
 import pytest
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import pypedream.database.purecomponents as pcdb
 
 def printUnit(uom):
     print(f"Name {uom.name} Symbol: {uom.symbol} Dims: {uom.printDimensions()} Units: {uom.printBaseUnits()} Factor: {uom.factor} Offset: {uom.offset}")
@@ -97,3 +98,14 @@ fdesc=water.functions[thermo.Properties.LiquidHeatCapacity]
 
 f1=factory.createFunction(fdesc,T)
 print(f1)
+
+#c1=pcdb.Water()
+##c2=pcdb.Isopropanol()
+#c3=pcdb.Methanol()
+
+sys= ThermodynamicSystem("Test")
+sys.addComponent(pcdb.Water())
+sys.addComponent(pcdb.Isopropanol())
+sys.addComponent(pcdb.Methanol())
+
+print(sys)

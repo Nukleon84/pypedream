@@ -46,3 +46,59 @@ class PhysicalConstants(Enum):
         HeatOfFormation= auto() 
         RKSA= auto() 
         RKSB= auto()         
+
+class EquationOfState(Enum):    
+        Ideal= auto() 
+        RedlichKwong= auto() 
+        SoaveRedlichKwong= auto() 
+        PengRobinson= auto() 
+    
+
+class EquilibriumApproach(Enum):    
+        GammaPhi= auto() 
+        PhiPhi= auto() 
+    
+
+class FugacityMethod(Enum):    
+        Ideal= auto() 
+        RedlichKwong= auto() 
+        SoaveRedlichKwong= auto() 
+        PengRobinson= auto() 
+    
+
+class ActivityMethod(Enum):    
+        Ideal= auto() 
+        Wilson= auto() 
+        NRTL= auto() 
+        UNIQUAC= auto() 
+        MODUNIQUAC= auto() 
+        UNIFAC= auto() 
+   
+class ExcessEnthalpyMethod(Enum):    
+        Ideal= auto() 
+        NRTL= auto() 
+        UNIQUAC= auto() 
+        MODUNIFAC= auto() 
+    
+
+class AllowedPhases(Enum):    
+        V= auto() 
+        L= auto() 
+        VLE= auto() 
+        LLE= auto() 
+        VLLE= auto() 
+        SLE= auto() 
+        SLLE= auto()     
+
+class ReferencePhase(Enum):    
+        Liquid= auto()         
+        Vapor= auto() 
+ 
+
+class PhaseState(Enum):    
+        Liquid= auto() 
+        BubblePoint= auto() 
+        LiquidVapor= auto() 
+        DewPoint= auto() 
+        Vapor= auto() 
+       

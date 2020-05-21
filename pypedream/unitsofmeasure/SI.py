@@ -1,6 +1,6 @@
 from . unit import Unit
+
 class SI(object):
-    
     none= Unit("","Dimensionless", [0,0,0,0,0,0,0,0])
     m=Unit("m","Meter", [1,0,0,0,0,0,0,0])        
     kg=Unit("kg","Kilogram", [0,1,0,0,0,0,0,0])                
@@ -8,7 +8,7 @@ class SI(object):
     K=Unit("K","Kelvin", [0,0,0,0,1,0,0,0])                
     mol= Unit("mol","mol", [0,0,0,0,0,1,0,0])                
     kmol= Unit.derive("kmol","KiloMol",mol,1e3,0)                 
-    
+
     N= Unit.derive("N","Newton", kg*m/(s**2))                
     J= Unit.derive("J","Joule",N*m)                
 

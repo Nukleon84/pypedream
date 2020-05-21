@@ -9,11 +9,15 @@ class Substance(object):
     def __init__(self, name, id, molarWeight):
         self.name=name
         self.id=id
-        self.molarWeight= Variable("MW", molarWeight, SI.kg/SI.kmol)
+        self.casno='123-45-6'
+        self.structure=''
+        self.isInert=False
+        self.isSolid=False
+        self.molarWeight= Variable(PhysicalConstants.MolarWeight.name, molarWeight, SI.kg/SI.kmol)
         self.molarWeight.isConstant=True
         self.constants={}
         self.functions={}
-        self.constants[PhysicalConstants.MolarWeight]=molarWeight
+        self.constants[PhysicalConstants.MolarWeight]=self.molarWeight
         return    
 
     def renameId(self,newID):
@@ -24,8 +28,8 @@ class Substance(object):
         self.functions[prop]=PureComponentFunction(prop, functionType, tmin, tmax, coefficients, xUnit, yUnit, referenceX)
         return self
     
-    def addConstant(self, const:PhysicalConstants, value, unit):
-        variable= Variable(str(const), value, unit)
+    def addConstant(self, const:PhysicalConstants, value, unit=SI.none):
+        variable= Variable(const.name, value, unit)
         variable.isConstant=True
         self.constants[const]=variable
         return self 

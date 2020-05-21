@@ -11,6 +11,10 @@ class Variable(Expression):
         self.internalUnit=unit
         self.displayUnit=unit
         self.isConstant=False
+        self.dimension=None
+        self.subscript=""
+        self.lowerBound=-1e20
+        self.upperBound=1e20
         
 
     def __str__(self):
