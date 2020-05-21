@@ -1,7 +1,7 @@
 from ..data.enums import FunctionTypes, Properties
 from ..data.pureComponentFunction import PureComponentFunction
 from ...expressions import Variable
-from ...expressions import Par, Sin, Cos, Tan, Ln, Exp, Sqrt, Sinh ,Cosh, Coth, Tanh
+from ...expressions import Par, Sin, Cos, Tan, Ln, Exp, Sqrt, Sinh ,Cosh, Coth, Tanh, Min, Max, Literal
 import math
 
 class PureComponentFunctionFactory(object):
@@ -32,13 +32,18 @@ class PureComponentFunctionFactory(object):
 
     def __createWagner(self, func:PureComponentFunction,T:Variable,TC:Variable,PC:Variable):
         c=self.__ensure(func.coefficients,7)
+        if(TC==None):
+            raise RuntimeError("Critical Temperature required for Wagner form")
+        if(PC==None):
+            raise RuntimeError("Critical Pressure required for Wagner form")
+        
         TR= T/TC
         tau=Par(1-TR)
         return Exp(Ln(PC) + 1/TR *Par(c[2]*tau + c[3]*tau**1.5 + c[4]*tau**3 + c[5]*tau**6) )
 
     def __createDIPPR106(self, func:PureComponentFunction,T:Variable,TC:Variable,PC:Variable):
         c=self.__ensure(func.coefficients,6)
-        TR=T/c[0]
+        TR=Min(0.99999,T/c[0])
         h= Par(c[2] +c[3]*TR + c[4]*TR**2 + c[5]*TR**3)
         return c[1] * Par(1-TR)**h
     
@@ -52,7 +57,7 @@ class PureComponentFunctionFactory(object):
 
     def __createRacket(self, func:PureComponentFunction,T:Variable,TC:Variable,PC:Variable):
         c=self.__ensure(func.coefficients,4)       
-        TR=T/c[2]
+        TR=Min(0.99999,T/c[2])        
         return c[0] / Par( c[1]**Par(1+Par(1-TR)**c[3]) )
 
     def __createWatson(self, func:PureComponentFunction,T:Variable,TC:Variable,PC:Variable):
@@ -77,7 +82,7 @@ class PureComponentFunctionFactory(object):
   
     def __createChemSep16(self, func:PureComponentFunction,T:Variable,TC:Variable,PC:Variable):
         c=self.__ensure(func.coefficients,5)       
-        return c[0] + Exp(c[1]/T) + c[2] + c[3]*T + c[4]*T**2
+        return c[0] + Exp(c[1]/T + c[2] + c[3]*T + c[4]*T**2)
     
     def __createChemSep101(self, func:PureComponentFunction,T:Variable,TC:Variable,PC:Variable):
         c=self.__ensure(func.coefficients,5)       
@@ -88,8 +93,10 @@ class PureComponentFunctionFactory(object):
         return c[0]*T**c[1]/Par(1 +c[2]/T +c[3]/T**2)
 
     def __createChemSep106(self, func:PureComponentFunction,T:Variable,TC:Variable,PC:Variable):
-        c=self.__ensure(func.coefficients,6)       
-        TR=T/TC
+        c=self.__ensure(func.coefficients,6)   
+        if(TC==None):
+            raise RuntimeError("Critical Temperature required for ChemSep106 form")        
+        TR=Min(0.99999,T/TC)
         h= c[1] +c[2]*TR+ c[3] *TR**2+c[4]*TR**3
         return c[0]*Par(1-TR)**h
 
