@@ -45,22 +45,20 @@ t = np.arange(0., 2., 0.001)
 
 #plt.show()
 
-x1= Variable('x1',1)
-x2= Variable('x2',1)
-x3= Variable('x3',1)
+
 
 sys=AlgebraicSystem("test")
 
-sys.equations.append(Equation(3*x1 - sym.Cos(x2*x3)- 3.0/2.0, "EQ1" ))
-sys.equations.append(Equation(4*x1**2 - 625*x2**2 + 2*x2-1, "EQ2" ))
-sys.equations.append(Equation(sym.Exp(-x1*x2) + 20*x3 + (10 * math.pi - 3.0)/3.0 , "EQ3"))
-
-sys.variables.extend([x1,x2,x3])
+x1= sys.makevar('x1',1)
+x2= sys.makevar('x2',1)
+x3= sys.makevar('x3',1)
+sys.eq(3*x1 - sym.Cos(x2*x3)- 3.0/2.0, "EQ1" )
+sys.eq(4*x1**2 - 625*x2**2 + 2*x2-1, "EQ2" )
+sys.eq(sym.Exp(-x1*x2) + 20*x3 + (10 * math.pi - 3.0)/3.0 , "EQ3")
 
 x1values=[]
 x2values=[]
 x3values=[]
-
 
 def callback(iter, norm, error):
     x1values.append(x1.value)
@@ -82,7 +80,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(xs=x1values, ys=x2values, zs=x3values)
 ax.scatter3D(x1values, x2values, x3values)
-plt.show()
+#plt.show()
 
 T= Variable("T", 273.15, SI.K)
 print(T.quantity())
@@ -107,5 +105,32 @@ sys= ThermodynamicSystem("Test")
 sys.addComponent(pcdb.Water())
 sys.addComponent(pcdb.Isopropanol())
 sys.addComponent(pcdb.Methanol())
-
 print(sys)
+
+
+fdesc=sys.components[0].functions[thermo.Properties.HeatOfVaporization]
+
+f1=factory.createFunction(fdesc,T)
+print(f1)
+print(f1.eval())
+
+
+
+#plt.plot(x1, 0, 'ko') # plotting t, b separately 
+
+#plt.show()
+
+
+'''
+f= Flowsheet("Test",sys)
+F01= f.unit("F01", "Flash", [f.mstr("S001")],[f.mstr("S002"),f.mstr("S003")])
+f.mstr("S001").ftpz(100, 25,1,[ ("Water",0.5), ("Methanol",0.5) ])
+f.unit("F01").spec([ ("VF",0.5,SI.none), ("P",1,METRIC.bar) ])
+f.init()
+f.solve()
+print(f.report())
+print(f.streamtable())
+
+'''
+
+

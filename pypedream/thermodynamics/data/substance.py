@@ -20,6 +20,12 @@ class Substance(object):
         self.constants[PhysicalConstants.MolarWeight]=self.molarWeight
         return    
 
+    def __str__(self):
+        return self.id
+    
+    def __repr__(self):
+        return self.id
+        
     def renameId(self,newID):
         self.id=newID
         return self

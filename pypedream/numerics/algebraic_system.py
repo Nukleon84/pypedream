@@ -1,3 +1,5 @@
+from ..expressions import Equation,Variable
+
 class AlgebraicSystem(object):
 
     def __init__(self, name=""):
@@ -7,6 +9,23 @@ class AlgebraicSystem(object):
         self.sparsityPattern=[]
         self.variableIndex={}
     
+    def addvar(self, var):
+        self.variables.append(var)
+        return var
+    
+    def makevar(self, name, value):
+        var= Variable(name,value)
+        self.variables.append(var)
+        return var
+    
+
+    def eq(self, rhs, name=""):
+        if(name==""):
+            name=f"EQ{len(self.equations)}"
+        equation=Equation(rhs,name)
+        self.equations.append(equation)
+        return equation
+
     def numberOfVariables(self):
         return len(self.variables)
 

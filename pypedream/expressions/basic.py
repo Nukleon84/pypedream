@@ -8,7 +8,7 @@ class Expression(object):
     def eval(self):
         if(math.isnan(self.value)):            
             self.value=self.fullEvaluate()
-        return self.value
+        return float(self.value)
 
     def fullEvaluate(self):
         raise NotImplementedError
@@ -117,6 +117,11 @@ class BinaryExpression(Expression):
     
     def __init__(self, symbol, left,right):
         super(BinaryExpression,self).__init__()
+        if(isinstance(left, int) or isinstance(left, float)):
+            left=Literal(left) 
+        if(isinstance(right, int) or isinstance(right, float)):
+            left=Literal(right) 
+    
         self.children.append(left)
         self.children.append(right)
         self.left=left
@@ -207,8 +212,8 @@ class Power(BinaryExpression):
     def __init__(self, left,right):
        super(Power,self).__init__('^',left,right)
 
-    def fullEvaluate(self):
-        return self.left.eval()**self.right.eval()     
+    def fullEvaluate(self):        
+        return self.left.eval()**self.right.eval()  
     
     def diff(self, variable):
         return (self.right.eval()*(self.left.eval()**(self.right.eval()-1))*self.left.diff(variable)
