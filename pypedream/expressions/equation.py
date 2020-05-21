@@ -1,5 +1,5 @@
-from . basic import Expression
-from . variable import Variable
+from . basic import Expression,Variable
+
 
 class Equation(object):
     def __init__(self, rhs, name=""):

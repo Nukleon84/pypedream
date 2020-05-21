@@ -1,23 +1,30 @@
 import math
+from typing import List
+from ..unitsofmeasure import Unit,SI
+
 class Expression(object):
     
     def __init__(self):
-        self.value = float('nan')
+        self.value= float
+        self.value = 0
+        self.children= List[Expression]
         self.children=[]
+        self.needsEval=True
 
-    def eval(self):
-        if(math.isnan(self.value)):            
+    def eval(self) -> float:
+        if(self.needsEval):            
             self.value=self.fullEvaluate()
-        return float(self.value)
+            self.needsEval=False
+        return self.value
 
-    def fullEvaluate(self):
+    def fullEvaluate(self)->float:
         raise NotImplementedError
 
-    def diff(self, variable):
+    def diff(self, variable)->float:
         return 0
 
     def reset(self):
-        self.value=float('nan')
+        self.needsEval=True
         for c in self.children:
             c.reset()
             
@@ -87,10 +94,10 @@ class Literal(Expression):
     def reset(self):
         return
 
-    def eval(self):        
+    def eval(self)->float:        
         return self.value
 
-    def fullEvaluate(self):
+    def fullEvaluate(self)->float:
         return self.value
 
     def __str__(self):
@@ -128,7 +135,7 @@ class BinaryExpression(Expression):
         self.right=right
         self.symbol=symbol
     def print(self):
-        return f"{self.left.print()}{self.symbol}{self.right.print()}"
+        return f"{self.left.print()} {self.symbol} {self.right.print()}"
     def __str__(self):
         return self.print()
     def __repr__(self):        
@@ -151,10 +158,10 @@ class Addition(BinaryExpression):
     def __init__(self, left,right):
        super(Addition,self).__init__('+',left,right)
 
-    def fullEvaluate(self):
+    def fullEvaluate(self)->float:
         return self.left.eval()+self.right.eval()
 
-    def diff(self, variable):
+    def diff(self, variable)->float:
         return self.left.diff(variable)+self.right.diff(variable)
     def __str__(self):
         return self.print()
@@ -166,10 +173,10 @@ class Subtraction(BinaryExpression):
     def __init__(self, left,right):
        super(Subtraction,self).__init__('-',left,right)
 
-    def fullEvaluate(self):
+    def fullEvaluate(self)->float:
         return (self.left.eval())- (self.right.eval())   
     
-    def diff(self, variable):
+    def diff(self, variable)->float:
         return (self.left.diff(variable))-(self.right.diff(variable))    
     def __str__(self):
         return self.print()
@@ -179,12 +186,12 @@ class Subtraction(BinaryExpression):
 class Multiplication(BinaryExpression):
 
     def __init__(self, left,right):
-       super(Multiplication,self).__init__('*',left,right)
+       super(Multiplication,self).__init__('×',left,right)
 
-    def fullEvaluate(self):
+    def fullEvaluate(self)->float:
         return self.left.eval()*self.right.eval()   
     
-    def diff(self, variable):
+    def diff(self, variable)->float:
         return self.left.diff(variable)*self.right.eval()+self.left.eval()*self.right.diff(variable)
     def __str__(self):
         return self.print()
@@ -196,10 +203,10 @@ class Division(BinaryExpression):
     def __init__(self, left,right):
        super(Division,self).__init__('/',left,right)
 
-    def fullEvaluate(self):
+    def fullEvaluate(self)->float:
         return self.left.eval()/self.right.eval()     
     
-    def diff(self, variable):
+    def diff(self, variable)->float:
         return (self.left.diff(variable)*self.right.eval()-self.left.eval()*self.right.diff(variable))/ (self.right.eval()**2)
     def __str__(self):
         return self.print()
@@ -212,10 +219,10 @@ class Power(BinaryExpression):
     def __init__(self, left,right):
        super(Power,self).__init__('^',left,right)
 
-    def fullEvaluate(self):        
+    def fullEvaluate(self)->float:        
         return self.left.eval()**self.right.eval()  
     
-    def diff(self, variable):
+    def diff(self, variable)->float:
         return (self.right.eval()*(self.left.eval()**(self.right.eval()-1))*self.left.diff(variable)
             +(self.left.eval()**self.right.eval())*math.log(self.right.eval())*self.right.diff(variable))
     def __str__(self):
@@ -228,12 +235,57 @@ class Negate(UnaryExpression):
     def __init__(self, argument):
        super(Negate,self).__init__('-',argument)
 
-    def fullEvaluate(self):
+    def fullEvaluate(self)->float:
         return -self.argument.eval()
 
-    def diff(self, variable):
+    def diff(self, variable)->float:
         return -(self.argument.diff(variable)) 
     def __str__(self):
         return self.print()
     def __repr__(self):        
         return self.print()        
+
+
+
+
+class Variable(Expression):       
+    
+    def __init__(self, name, value, unit=SI.none):
+        super(Variable,self).__init__()
+        self.name=name
+        self.value=value
+        self.internalUnit=unit
+        self.displayUnit=unit
+        self.isConstant=False
+        self.dimension=None
+        self.subscript=""
+        self.lowerBound=-1e20
+        self.upperBound=1e20
+        
+
+    def __str__(self):
+        return self.print()
+
+    def displayValue(self):
+        return Unit.convert(self.internalUnit, self.displayUnit, self.value)
+
+    def setValue(self,value):
+        self.value= Unit.convert(self.displayUnit, self.internalUnit, value)
+
+    def quantity(self):
+        return (self.displayValue(), self.displayUnit)
+
+    def eval(self)->float:      
+        return self.value
+
+    def fullEvaluate(self)->float:
+        return self.value
+
+    def diff(self, variable)->float:
+        return 1.0 if variable==self else 0.0
+
+    def reset(self):
+        return
+        
+    def print(self):
+        return f"{self.name}"  

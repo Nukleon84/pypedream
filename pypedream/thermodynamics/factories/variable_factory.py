@@ -1,6 +1,6 @@
 from ...unitsofmeasure.unitset import UnitSetSI,UnitSetDefault
 from ...unitsofmeasure.unitset import PhysicalDimension
-from ...expressions.variable import Variable
+from ...expressions import Variable
 class VariableFactory(object):
     def __init__(self):
         self.internalSet= UnitSetSI()

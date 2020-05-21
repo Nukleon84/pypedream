@@ -1,4 +1,4 @@
-from ...expressions.variable import Variable
+from ...expressions import Variable
 from ...unitsofmeasure import Unit, SI, METRIC
 from .enums import FunctionTypes, PhysicalConstants, Properties,constantToName, propertyToName
 from .pureComponentFunction import PureComponentFunction
