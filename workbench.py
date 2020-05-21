@@ -2,7 +2,7 @@ from pypedream import  AlgebraicSystem, Equation, Variable,  Addition, Subtracti
 from pypedream import ScalarMethods as scalar
 from pypedream import NewtonSolver
 from pypedream import Sin, Cos, Exp
-from pypedream.thermodynamics import PureComponentFunctionFactory, Substance,ThermodynamicSystem
+from pypedream.thermodynamics import PureComponentFunctionFactory, Substance,ThermodynamicSystem, PhysicalConstants, Properties
 import pypedream.thermodynamics as thermo
 import pypedream as sym
 import pytest
@@ -10,7 +10,10 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import pypedream.database.purecomponents as pcdb
-
+from timeit import default_timer as timer
+import random
+import cProfile
+import pstats
 def printUnit(uom):
     print(f"Name {uom.name} Symbol: {uom.symbol} Dims: {uom.printDimensions()} Units: {uom.printBaseUnits()} Factor: {uom.factor} Offset: {uom.offset}")
     return
@@ -66,8 +69,7 @@ def callback(iter, norm, error):
     x3values.append(x3.value)
     
 
-solver= NewtonSolver(50,1e-6,1.0,callback)
-solver.solve(sys)
+
 for v in sys.variables:
     print(v.value)
 #Assert.AreEqual(0.833196581863439, x1.Val(), 1e-6);
@@ -105,16 +107,30 @@ sys= ThermodynamicSystem("Test")
 sys.addComponent(pcdb.Water())
 sys.addComponent(pcdb.Isopropanol())
 sys.addComponent(pcdb.Methanol())
-print(sys)
+#print(sys)
 
+print("")
+print ("Start timing")
 
-fdesc=sys.components[0].functions[thermo.Properties.HeatOfVaporization]
+def test():
+    for c in sys.components:
+        for p in [e for e in Properties]:
+            fdesc=c.functions[p]
+            T= Variable("T", 273.15, SI.K)
+            T.displayUnit=METRIC.C
+            TC= c.constants[PhysicalConstants.CriticalTemperature]
+            PC= c.constants[PhysicalConstants.CriticalPressure]
+            f=sys.correlationFactory.createFunction(fdesc,T, TC, PC)
+            for i in range(1000):
+                T.value= random.uniform(100.0,550.0)
+                f.reset()
+                y= f.eval()
+start = timer()                
+test()
+end = timer()
+print(f"{end - start}s")
 
-f1=factory.createFunction(fdesc,T)
-print(f1)
-print(f1.eval())
-
-
+cProfile.run("test()")
 
 #plt.plot(x1, 0, 'ko') # plotting t, b separately 
 

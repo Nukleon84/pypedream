@@ -1,14 +1,13 @@
 from pypedream import  AlgebraicSystem, Equation, Variable,  Addition, Subtraction, Multiplication, Division, Unit, SI, METRIC,PhysicalDimension, UnitSet, UnitSetDefault, UnitSetSI
 from pypedream.thermodynamics import PureComponentFunctionFactory, Substance,ThermodynamicSystem, Properties, PhysicalConstants
-import pypedream.thermodynamics as thermo
-import matplotlib.pyplot as plt
+from pypedream.database import  purecomponents as pcdb
 
-import pypedream.database.purecomponents as pcdb
+import math
 import numpy as np
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import math
+
 
 sys= ThermodynamicSystem("Test")
 sys.addComponent(pcdb.Water())
@@ -25,10 +24,11 @@ tmin=st.sidebar.slider('Minimum Temperature',-100, 500,25)
 tmax=st.sidebar.slider('Maximum Temperature',-100, 500,200)
 samples=st.sidebar.number_input('samples',10,150)
 
-def calculate():
-    TC= c.constants[PhysicalConstants.CriticalTemperature]
-    PC= c.constants[PhysicalConstants.CriticalPressure]
-    f=sys.correlationFactory.createFunction(fdesc,T, TC, PC)
+TC= c.constants[PhysicalConstants.CriticalTemperature]
+PC= c.constants[PhysicalConstants.CriticalPressure]
+f=sys.correlationFactory.createFunction(fdesc,T, TC, PC)
+
+def calculate():  
     x=[]
     y=[]
     yd=[]
@@ -47,7 +47,8 @@ def calculate():
 
 df=calculate()
 st.title('Pure Component Property Visualizer')    
-
+st.write(f"Equation Form: {fdesc.functionType}")
+st.write(f"{f}")
 fig = px.scatter(df, x =df['Temperature'],y=df['Property (raw)'])
 fig.update_xaxes(title="Temperature [°C]")
 fig.update_yaxes(title=f"{p.name} [{fdesc.yUnit}]")
