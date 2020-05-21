@@ -1,9 +1,11 @@
-from ..factories.pureComponentFunctionFactory import PureComponentFunctionFactory
+from ..factories.pure_factory import PureComponentFunctionFactory
 from .equilibrium_method import EquilibriumMethod
 from .enthalpy_method import EnthalpyMethod, PureEnthalpy
 from .enums import ActivityMethod, FugacityMethod, EquilibriumApproach, EquationOfState, AllowedPhases, ReferencePhase, PhysicalConstants
 from .substance import Substance
 from ..factories.variable_factory import VariableFactory
+from ...unitsofmeasure.unitset import PhysicalDimension
+
 class ThermodynamicSystem(object):
     
     def __init__(self,name, baseMethod="IDEAL"):
@@ -86,19 +88,24 @@ class ThermodynamicSystem(object):
         lines.append('Pure Component Property Correlations')
         lines.append('')                 
         #_logger.Log(String.Format("{0,-15} {1,-25} {2,-15} {3,-8} {4,-8} {5,-5} {6,-25}", "Comp", "Property", "Form", "Min T", "Max T", "Coeff", "Equation"));
-        lines.append('{0}{1}{2}{3}{4}{5}{6}{7}{8}'.format('Name'.ljust(25),'ID'.ljust(15),'Property'.ljust(25),'Form'.ljust(15),'Tmin'.ljust(15),'Tmax'.ljust(15),'T Unit'.ljust(15),'Num Coeff'.ljust(15),'Unit'.ljust(15)))
+        lines.append('{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}'.format('Name'.ljust(25),'ID'.ljust(15),'Property'.ljust(25),'Form'.ljust(15),'Tmin'.ljust(12),'Tmax'.ljust(12),'T Unit'.ljust(8),'# Coeff'.ljust(8),'Unit'.ljust(15),'Equation'.ljust(15)))
+        T = self.variableFactory.createVariable("T", "","",PhysicalDimension.Temperature)
         for c in self.components:
+           TC = c.constants[PhysicalConstants.CriticalTemperature] 
+           PC = c.constants[PhysicalConstants.CriticalPressure] 
            for f in c.functions.values():
-               lines.append('{0}{1}{2}{3}{4}{5}{6}{7}{8}'.format(
+               lines.append('{0}{1}{2}{3}{4}{5}{6}{7}{8}{9}'.format(
                     c.name.ljust(25),
                     c.id.ljust(15),
                     f.property.name.ljust(25),
                     f.functionType.name.ljust(15),
-                    str(f.tmin).ljust(15),
-                    str(f.tmax).ljust(15),
-                    f.xUnit.symbol.ljust(15),
-                    str(len(f.coefficients)).ljust(15),
-                    f.yUnit.symbol.ljust(15)))
+                    str(f.tmin).ljust(12),
+                    str(f.tmax).ljust(12),
+                    f.xUnit.symbol.ljust(8),
+                    str(len(f.coefficients)).ljust(8),
+                    f.yUnit.symbol.ljust(15),
+                    self.correlationFactory.createFunction(f,T,TC,PC)
+                    ))
 
        
 

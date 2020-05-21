@@ -1,4 +1,4 @@
-from . enums import *
+from . enums import EquationOfState, EquilibriumApproach, ActivityMethod, EquationOfState, FugacityMethod, AllowedPhases
 
 class EquilibriumMethod(object):
     def __init__(self):

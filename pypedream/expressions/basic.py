@@ -123,7 +123,7 @@ class BinaryExpression(Expression):
         self.right=right
         self.symbol=symbol
     def print(self):
-        return f"{self.left.print()} {self.symbol} {self.right.print()}"
+        return f"{self.left.print()}{self.symbol}{self.right.print()}"
     def __str__(self):
         return self.print()
     def __repr__(self):        

@@ -82,7 +82,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(xs=x1values, ys=x2values, zs=x3values)
 ax.scatter3D(x1values, x2values, x3values)
-#plt.show()
+plt.show()
 
 T= Variable("T", 273.15, SI.K)
 print(T.quantity())

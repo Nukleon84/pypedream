@@ -1,6 +1,6 @@
 from ...expressions.variable import Variable
 from ...unitsofmeasure import Unit, SI, METRIC
-from .enums import FunctionTypes, PhysicalConstants, Properties
+from .enums import FunctionTypes, PhysicalConstants, Properties,constantToName, propertyToName
 from .pureComponentFunction import PureComponentFunction
 
 
@@ -13,7 +13,7 @@ class Substance(object):
         self.structure=''
         self.isInert=False
         self.isSolid=False
-        self.molarWeight= Variable(PhysicalConstants.MolarWeight.name, molarWeight, SI.kg/SI.kmol)
+        self.molarWeight= Variable(constantToName[PhysicalConstants.MolarWeight], molarWeight, SI.kg/SI.kmol)
         self.molarWeight.isConstant=True
         self.constants={}
         self.functions={}
@@ -29,7 +29,7 @@ class Substance(object):
         return self
     
     def addConstant(self, const:PhysicalConstants, value, unit=SI.none):
-        variable= Variable(const.name, value, unit)
+        variable= Variable(constantToName[const], value, unit)
         variable.isConstant=True
         self.constants[const]=variable
         return self 

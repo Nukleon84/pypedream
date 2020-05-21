@@ -101,4 +101,33 @@ class PhaseState(Enum):
         LiquidVapor= auto() 
         DewPoint= auto() 
         Vapor= auto() 
-       
+
+propertyToName={
+     Properties.HeatOfVaporization:"HVAP",
+     Properties.IdealGasHeatCapacity:"CPID",
+     Properties.LiquidDensity:"DENL",
+     Properties.LiquidHeatCapacity:"CL",
+     Properties.LiquidHeatConductivity:"KLIQ",
+     Properties.SurfaceTension:"ST",
+     Properties.VaporHeatConductivity:"KVAP",
+     Properties.VaporViscosity:"VISV",
+     Properties.LiquidViscosity:"VISL",
+     Properties.VaporPressure:"VP"
+}       
+constantToName={
+        PhysicalConstants.CriticalPressure:"PC",
+        PhysicalConstants.CriticalTemperature:"TC",
+        PhysicalConstants.MolarWeight:"MW",
+        PhysicalConstants.AcentricFactor:"ACF",
+}
+nameToProperty={
+     "HVAP":Properties.HeatOfVaporization,
+     "CPID":Properties.IdealGasHeatCapacity,
+     "DENL":Properties.LiquidDensity,
+     "CL":Properties.LiquidHeatCapacity,
+     "KLIQ":Properties.LiquidHeatConductivity,
+     "ST":Properties.SurfaceTension,
+     "KVAP":Properties.VaporHeatConductivity,
+     "VISV":Properties.VaporViscosity,
+     "VISL":Properties.LiquidViscosity,
+     "VP":Properties.VaporPressure}   
