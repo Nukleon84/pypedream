@@ -261,16 +261,38 @@ class Variable(Expression):
         self.subscript=""
         self.lowerBound=-1e20
         self.upperBound=1e20
+        self.isFixed=False
+        return
         
 
     def __str__(self):
         return self.print()
 
+    def fullName(self):
+        if(self.subscript != ""):
+            return f"{self.name}[{self.subscript}]" 
+        else:
+            return self.name
+
     def displayValue(self):
         return Unit.convert(self.internalUnit, self.displayUnit, self.value)
 
-    def setValue(self,value):
-        self.value= Unit.convert(self.displayUnit, self.internalUnit, value)
+    def setValue(self,value, unit=None):
+        if(unit==None):
+            unit=self.displayUnit
+        self.value= Unit.convert(unit, self.internalUnit, value)
+        return
+
+    def fixValue(self,value, unit=None):
+        if(unit==None):
+            unit=self.displayUnit
+        self.value= Unit.convert(unit, self.internalUnit, value)
+        self.isFixed=True
+        return
+    
+    def unfix(self):
+        self.isFixed=False
+        return
 
     def quantity(self):
         return (self.displayValue(), self.displayUnit)
@@ -288,4 +310,4 @@ class Variable(Expression):
         return
         
     def print(self):
-        return f"{self.name}"  
+        return self.fullName()  
