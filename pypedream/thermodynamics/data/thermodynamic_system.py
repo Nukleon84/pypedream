@@ -6,6 +6,8 @@ from .substance import Substance
 from ..factories.variable_factory import VariableFactory
 from ...unitsofmeasure.unitset import PhysicalDimension
 
+from ..factories.expression_factory import ExpressionFactory
+
 class ThermodynamicSystem(object):
     
     def __init__(self,name, baseMethod="IDEAL"):
@@ -14,6 +16,7 @@ class ThermodynamicSystem(object):
         self.components=[]
         self.correlationFactory= PureComponentFunctionFactory()
         self.variableFactory=VariableFactory()
+        self.expressionFactory= ExpressionFactory(self)
         self.equilibrium= EquilibriumMethod()
         self.modifyDefaults()
         self.enthalpyMethod= EnthalpyMethod()
