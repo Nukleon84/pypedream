@@ -1,14 +1,15 @@
 
 from .base_element import BaseElement
-from ..thermodynamics.data.thermodynamic_system import ThermodynamicSystem
+from ..thermodynamics import ThermodynamicSystem, PhaseState
 from ..unitsofmeasure import PhysicalDimension
-from ..numerics import AlgebraicSystem
-from ..expressions import Par, SymSum
+from ..numerics import AlgebraicSystem, ScalarMethods
+from ..expressions import Par, SymSum, Alias
 
 class MaterialStream(BaseElement):
     def __init__(self, name,system:ThermodynamicSystem):
         super(MaterialStream, self).__init__(name,system)
 
+        self.state= PhaseState.LiquidVapor
         self.addVar(system.variableFactory.createVariable("T","","Stream Temperature",PhysicalDimension.Temperature))
         self.addVar(system.variableFactory.createVariable("P","","Stream Pressure",PhysicalDimension.Pressure))
         self.addVar(system.variableFactory.createVariable("F","","Stream Molar Flow",PhysicalDimension.MolarFlow))
@@ -26,6 +27,7 @@ class MaterialStream(BaseElement):
         self.x=[]
         self.y=[]
         self.z=[]
+        self.K=[]
         for c in system.components:
             zi=system.variableFactory.createVariable("z",c.id,"Mixed Molar composition",PhysicalDimension.MolarFraction)                        
             xi=system.variableFactory.createVariable("x",c.id,"Liquid Molar composition",PhysicalDimension.MolarFraction)
@@ -38,7 +40,8 @@ class MaterialStream(BaseElement):
             self.x.append(xi)
             self.y.append(yi)
             self.z.append(zi)
-            #self.addVar(system.variableFactory.createVariable("K",c.id,"Equilibrium coefficient",PhysicalDimension.Dimensionless))
+            Ki=Alias(f"K[{c.id}]",self.system.expressionFactory.EquilibriumCoefficient(c,self.T,self.P,self.x,self.y))
+            self.K.append(Ki)
         return
     
     def ftpz(self, f,t,p, z):        
@@ -70,16 +73,63 @@ class MaterialStream(BaseElement):
         return self        
     
     def init(self):
-        self.L.value= (0.5*self.F.value)
-        self.V.value= (0.5*self.F.value)
-        
-        if(not self.V.isFixed):
-            self.VF.value=0.5
-        
-        for c in self.system.components:
-            self.getVar(f"x[{c.id}]").setValue(self.getVar(f"z[{c.id}]").value*0.9)
-            self.getVar(f"y[{c.id}]").setValue(self.getVar(f"z[{c.id}]").value*1.1)           
+        if(self.T.isFixed and self.P.isFixed):
+            self.flashP(self.VF)
+        if(self.VF.isFixed and self.P.isFixed):
+            self.flashP(self.T)
+        return
 
+
+    def generateRachfordRice(self):
+        rachfordRice=None
+        for i in range(len(self.system.components)):            
+            if(rachfordRice==None):
+                rachfordRice = self.z[i]*Par(1-self.K[i])/Par(1+ self.VF *Par(self.K[i]-1))
+            else:
+                rachfordRice += self.z[i]*Par(1-self.K[i])/Par(1+ self.VF *Par(self.K[i]-1))
+        return rachfordRice
+
+    
+    def flashP(self,solveFor):
+        #rachfordRice = Sym.Sum(0, NC, i => x[i] * (1 - K[i]) / (1 + VaporFraction * (K[i] - 1)));
+        #Solve for unknown vapor fraction
+        #oldVF= self.VF.value
+        rachfordRice=self.generateRachfordRice()
+
+        if(solveFor==self.VF):
+            rachfordRice.reset()
+            self.VF.value=0
+            rrAt0= rachfordRice.eval()
+            
+            rachfordRice.reset()
+            self.VF.value=1
+            rrAt1= rachfordRice.eval()
+
+            if(rrAt0>0 and rrAt1>0):
+                self.state=PhaseState.Liquid
+                self.VF.value=0
+            if(rrAt0>0 and rrAt1==0):
+                self.state=PhaseState.BubblePoint
+                self.VF.value=0    
+            if(rrAt0<0 and rrAt1>0):
+                self.state=PhaseState.LiquidVapor
+                self.VF.value=0.5
+            if(rrAt0==0 and rrAt1<0):
+                self.state=PhaseState.DewPoint
+                self.VF.value=1  
+            if(rrAt0<0 and rrAt1<0):
+                self.state=PhaseState.Vapor
+                self.VF.value=1                                                      
+
+        if(self.state== PhaseState.LiquidVapor or self.state==PhaseState.BubblePoint or self.state==PhaseState.DewPoint):
+            ScalarMethods.solveNewtonRaphson(rachfordRice, solveFor)
+
+        self.V.value= self.VF.value*self.F.value
+        self.L.value= self.F.value-self.V.value
+        
+        for i in range(len(self.x)):            
+            self.x[i].value= self.z[i].value/(1 + self.VF.value*(self.K[i].value-1))
+            self.y[i].value= self.x[i].value*self.K[i].value  
         return
 
     def instantiate(self, instance:AlgebraicSystem):
@@ -96,15 +146,15 @@ class MaterialStream(BaseElement):
 
         instance.eq( VF*F - V , "Vapor Fraction"  )
         instance.eq( F - L- V , "Total mole balance"  )
-       
+        instance.eq( SymSum(y)-SymSum(x) , "Mole Fraction Closure (two-phase)"  )
         for c in self.system.components:            
             xi=self.getVar(f"x[{c.id}]")
             yi=self.getVar(f"y[{c.id}]")
             zi=self.getVar(f"z[{c.id}]")     
-
+            
             Ki=self.system.expressionFactory.EquilibriumCoefficient(c,T,P,x,y)
+
             instance.eq( yi-Ki*xi , "Equilibrium"  )
             instance.eq( zi - VF*yi- Par(1-VF)*xi , "Component Balance"  )
-
-        instance.eq( SymSum(y)-SymSum(x) , "Mole Fraction Closure (two-phase)"  )                    
+                            
         return

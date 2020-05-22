@@ -1,9 +1,10 @@
 from . algebraic_system import AlgebraicSystem
 import numpy as np
-from scipy.sparse.linalg import spsolve as sparseLinearSolve
+from scipy.sparse.linalg import spsolve as sparseLinearSolve, lgmres
 from scipy.sparse import dok_matrix
 from numpy.linalg import norm
 from .fill_jacobian import fillJacobian
+
 
 class NewtonSolver(object):
     
@@ -13,11 +14,15 @@ class NewtonSolver(object):
         self.iterCallback= _callback
         self.factor=factor
         return
+
+    def log(self, msg):
+        print(msg)
+        return
  
     def solve(self, system: AlgebraicSystem):
 
         if(system.numberOfEquations() != system.numberOfVariables()):
-            print(f"Number of Equations: {system.numberOfEquations()} Number of Variables: {system.numberOfVariables()}")
+            self.log(f"Number of Equations: {system.numberOfEquations()} Number of Variables: {system.numberOfVariables()}")
             raise RuntimeError("Can only solve square systems")
 
         system.createIndex()
@@ -29,23 +34,37 @@ class NewtonSolver(object):
         if(self.iterCallback):
             self.iterCallback(-1,n,e )
 
+        labels=["Iter","Norm","Residual","Flags","Comment"]
+        comment=''
+        print(f"{labels[0]:<4} {'': <10s} {labels[1]:<12} {'': <10s} {labels[2]:<12} {'': <10s} {labels[3]:<6} {'': <10s} {labels[4]:<12}")
         for i in range(self.maximumIterations):
             A,b= fillJacobian(system,b)
             delta= sparseLinearSolve(A,-b)
-
-            for index,variable in enumerate(system.variables):
-                variable.value+= self.factor*delta[index]
-
+            comment=''
             n=norm(delta)
             e=np.amax(b)
-            print(f"Iter: {i} Norm: {n} Err:{e}")
+            flags=["-","-","-","-"]
+            
+            if(np.isnan(n)):                
+                delta,_= lgmres(A,-b)                
+                flags[0]='I'
+                comment='Singular Matrix. Trying lgmres'
+                n=norm(delta)
+
+            for index,variable in enumerate(system.variables):
+                variable.addDelta(self.factor*delta[index])
+            
+            self.log(f"{i:4} {'': <10s} {('{0:2E}'.format(n)):>12} {'': <10s} {('{0:2E}'.format(e)):>12} {'': <10s} {''.join(flags):<6} {'': <10s} {comment}")    
+
             if(self.iterCallback):
                 self.iterCallback(i,n,e )
 
             if(norm(delta)<self.tolerance):
-                print("Solve succeeded.")
-                return True
-            
+                if(e<self.tolerance):
+                    self.log("Solve succeeded.")
+                else:
+                    self.log("Norm is less than tolerance but residuals are not converged.")
+                return True            
 
-        print("Maximum number of iterations exceeded!")
+        self.log("Maximum number of iterations exceeded!")
         return False

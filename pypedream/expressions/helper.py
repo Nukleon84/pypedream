@@ -21,6 +21,28 @@ class SymSum(Expression):
     def __str__(self):
         return self.print()
     def __repr__(self):        
-        return self.print()        
+        return self.print()   
+
+class Alias(Expression):
+    
+    def __init__(self, name,argument):
+        super(Alias,self).__init__()
+        self.name=name
+        self.argument=argument       
+        self.children.append(argument)
+
+    def fullEvaluate(self):
+        return self.argument.eval()
+
+    def diff(self, variable):
+        return self.argument.diff(variable)  
+    
+    def print(self):        
+        return f"{self.name}"
+
+    def __str__(self):
+        return self.print()
+    def __repr__(self):        
+        return self.print()                
 
 

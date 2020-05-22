@@ -105,7 +105,7 @@ class UnitSetDefault(UnitSet):
         self.mapping[PhysicalDimension.Volume]=SI.cum
 
         self.mapping[PhysicalDimension.MassFlow]=SI.kg/SI.h
-        self.mapping[PhysicalDimension.MolarFlow]=SI.mol/SI.h
+        self.mapping[PhysicalDimension.MolarFlow]=SI.kmol/SI.h
         self.mapping[PhysicalDimension.HeatFlow]=SI.kW
         self.mapping[PhysicalDimension.Enthalpy]=SI.kW
         self.mapping[PhysicalDimension.VolumeFlow]=SI.cum/SI.h

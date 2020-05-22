@@ -12,8 +12,7 @@ def fillJacobian(system:AlgebraicSystem,b:ndarray):
     for incidence in system.sparsityPattern:
         i=incidence["EquationIndex"]
         j=incidence["VariableIndex"]   
-        eq=  system.equations[i].rhs   
-        var=system.variables[j]
-        der= eq.diff(var)
-        A[i,j]=der
+        eq=     system.equations[i].rhs   
+        var=    system.variables[j]        
+        A[i,j]= eq.diff(var)
     return (A.tocsc(),b)

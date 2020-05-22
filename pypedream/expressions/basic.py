@@ -1,6 +1,6 @@
 import math
 from typing import List
-from ..unitsofmeasure import Unit,SI
+from ..unitsofmeasure import Unit,SI, PhysicalDimension
 
 class Expression(object):
     
@@ -306,6 +306,14 @@ class Variable(Expression):
     def diff(self, variable)->float:
         return 1.0 if variable==self else 0.0
 
+    def addDelta(self, delta):
+        if(self.dimension== PhysicalDimension.Temperature):
+            delta=max(-35, min(35, delta))
+
+        self.value+= delta
+        self.value=max(self.lowerBound, min(self.upperBound, self.value))
+        return
+        
     def reset(self):
         return
         

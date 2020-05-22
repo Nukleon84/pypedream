@@ -9,7 +9,7 @@ class ScalarMethods(object):
             fx= f.eval()
             dfdx=f.diff(x)
             delta = -fx/dfdx
-            x.value+=delta
+            x.addDelta(delta)
             print(f"Iter: {i} x: {x.value} dfdx: {dfdx} delta: {delta}")
 
             if(math.fabs(delta)<tolerance):
