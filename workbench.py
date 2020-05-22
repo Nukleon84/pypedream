@@ -14,6 +14,9 @@ from timeit import default_timer as timer
 import random
 import cProfile
 import pstats
+
+from pypedream.flowsheeting import MaterialStream, Flowsheet
+
 def printUnit(uom):
     print(f"Name {uom.name} Symbol: {uom.symbol} Dims: {uom.printDimensions()} Units: {uom.printBaseUnits()} Factor: {uom.factor} Offset: {uom.offset}")
     return
@@ -126,17 +129,17 @@ def test():
                 f.reset()
                 y= f.eval()
 start = timer()                
-test()
+#test()
 end = timer()
 print(f"{end - start}s")
 
-cProfile.run("test()")
-
-#plt.plot(x1, 0, 'ko') # plotting t, b separately 
-
-#plt.show()
+#cProfile.run("test()")
 
 
+f= Flowsheet("Test",sys)
+S001=f.mstr("S001")
+
+print(S001)
 '''
 f= Flowsheet("Test",sys)
 F01= f.unit("F01", "Flash", [f.mstr("S001")],[f.mstr("S002"),f.mstr("S003")])
