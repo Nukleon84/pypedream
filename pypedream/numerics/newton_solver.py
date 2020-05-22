@@ -17,6 +17,7 @@ class NewtonSolver(object):
     def solve(self, system: AlgebraicSystem):
 
         if(system.numberOfEquations() != system.numberOfVariables()):
+            print(f"Number of Equations: {system.numberOfEquations()} Number of Variables: {system.numberOfVariables()}")
             raise RuntimeError("Can only solve square systems")
 
         system.createIndex()
@@ -37,12 +38,12 @@ class NewtonSolver(object):
 
             n=norm(delta)
             e=np.amax(b)
-            #print(f"Iter: {i} Norm: {n} Err:{e}")
+            print(f"Iter: {i} Norm: {n} Err:{e}")
             if(self.iterCallback):
                 self.iterCallback(i,n,e )
 
             if(norm(delta)<self.tolerance):
-                #print("Solve succeeded.")
+                print("Solve succeeded.")
                 return True
             
 
