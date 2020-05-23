@@ -44,7 +44,8 @@ class MaterialStream(BaseElement):
             self.K.append(Ki)
         return
     
-    def ftpz(self, f,t,p, z):        
+    def ftpz(self, f,t,p, z):    
+        self.VF.unfix()    
         self.F.fixValue(f)
         self.T.fixValue(t)
         self.P.fixValue(p)
@@ -59,6 +60,7 @@ class MaterialStream(BaseElement):
         return self
     
     def fvpz(self, f,v,p, z):        
+        self.T.unfix()
         self.F.fixValue(f)
         self.VF.fixValue(v)
         self.P.fixValue(p)
@@ -71,6 +73,36 @@ class MaterialStream(BaseElement):
 
         self.init()
         return self        
+
+    def fpx(self, f,p, x):     
+        self.T.unfix()   
+        self.F.fixValue(f)
+        self.VF.fixValue(0.0)
+        self.P.fixValue(p)
+        
+        for c in self.system.components:
+             self.getVar(f"z[{c.id}]").fixValue(0)
+
+        for pair in x:
+            self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+
+        self.init()
+        return self  
+
+    def fpy(self, f,p, y):   
+        self.T.unfix()     
+        self.F.fixValue(f)
+        self.VF.fixValue(1.0)
+        self.P.fixValue(p)
+        
+        for c in self.system.components:
+             self.getVar(f"z[{c.id}]").fixValue(0)
+
+        for pair in y:
+            self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+
+        self.init()
+        return self          
     
     def init(self):
         if(self.T.isFixed and self.P.isFixed):
@@ -80,9 +112,9 @@ class MaterialStream(BaseElement):
         return
 
 
-    def generateRachfordRice(self):
+    def __generateRachfordRice(self):
         rachfordRice=None
-        for i in range(len(self.system.components)):            
+        for i,c in enumerate(self.system.components):            
             if(rachfordRice==None):
                 rachfordRice = self.z[i]*Par(1-self.K[i])/Par(1+ self.VF *Par(self.K[i]-1))
             else:
@@ -91,12 +123,10 @@ class MaterialStream(BaseElement):
 
     
     def flashP(self,solveFor):
-        #rachfordRice = Sym.Sum(0, NC, i => x[i] * (1 - K[i]) / (1 + VaporFraction * (K[i] - 1)));
-        #Solve for unknown vapor fraction
-        #oldVF= self.VF.value
-        rachfordRice=self.generateRachfordRice()
+        rachfordRice=self.__generateRachfordRice()
 
         if(solveFor==self.VF):
+            #Solve for unknown vapor fraction
             rachfordRice.reset()
             self.VF.value=0
             rrAt0= rachfordRice.eval()
@@ -127,7 +157,7 @@ class MaterialStream(BaseElement):
         self.V.value= self.VF.value*self.F.value
         self.L.value= self.F.value-self.V.value
         
-        for i in range(len(self.x)):            
+        for i,c in enumerate(self.system.components):            
             self.x[i].value= self.z[i].value/(1 + self.VF.value*(self.K[i].value-1))
             self.y[i].value= self.x[i].value*self.K[i].value  
         return
@@ -147,14 +177,9 @@ class MaterialStream(BaseElement):
         instance.eq( VF*F - V , "Vapor Fraction"  )
         instance.eq( F - L- V , "Total mole balance"  )
         instance.eq( SymSum(y)-SymSum(x) , "Mole Fraction Closure (two-phase)"  )
-        for c in self.system.components:            
-            xi=self.getVar(f"x[{c.id}]")
-            yi=self.getVar(f"y[{c.id}]")
-            zi=self.getVar(f"z[{c.id}]")     
-            
-            Ki=self.system.expressionFactory.EquilibriumCoefficient(c,T,P,x,y)
-
-            instance.eq( yi-Ki*xi , "Equilibrium"  )
-            instance.eq( zi - VF*yi- Par(1-VF)*xi , "Component Balance"  )
+       
+        for i,c in enumerate(self.system.components): 
+            instance.eq( self.y[i] - self.K[i]*self.x[i] , "Equilibrium"  )
+            instance.eq( self.z[i]   - VF*self.y[i]- Par(1-VF)*self.x[i] , "Component Balance"  )
                             
         return

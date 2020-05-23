@@ -3,20 +3,22 @@ import math
 class ScalarMethods(object):
 
     @staticmethod
-    def solveNewtonRaphson(f, x, maxIter=50, tolerance=1e-6):
+    def solveNewtonRaphson(f, x, maxIter=50, tolerance=1e-6, silent=True):
         for i in range(maxIter):
             f.reset()
             fx= f.eval()
             dfdx=f.diff(x)
             delta = -fx/dfdx
             x.addDelta(delta)
-            print(f"Iter: {i} x: {x.value} dfdx: {dfdx} delta: {delta}")
+            if(not silent):
+                print(f"Iter: {i} x: {x.value} dfdx: {dfdx} delta: {delta}")
 
             if(math.fabs(delta)<tolerance):
-                print(f"Newton-Raphson solver converged in {i} iterations.")
+                if(not silent):
+                    print(f"Newton-Raphson solver converged in {i} iterations.")
                 return True
-
-        print(f"Newton-Raphson solver did not converge in {i} iterations.")                
+        if(not silent):
+            print(f"Newton-Raphson solver did not converge in {i} iterations.")                
         return False                
         
     @staticmethod

@@ -2,32 +2,43 @@
 import sys
 import os
 sys.path.append(os.path.abspath('../pypedream'))
-
 from pypedream import MaterialStream, Flowsheet, ThermodynamicSystem
 import pypedream.database.purecomponents as pcdb
 
 sys= ThermodynamicSystem("Test")
 sys.addComponent(pcdb.Water())
-#sys.addComponent(pcdb.Isopropanol())
+sys.addComponent(pcdb.Isopropanol())
 sys.addComponent(pcdb.Methanol())
 
 f= Flowsheet("Test",sys)
 S001=f.mstr("S001")
 
 #f.mstr("S001").fvpz(100, 0.5,1000,[ ("Water",0.5), ("Methanol",0.5) ])
-f.mstr("S001").ftpz(100, 82.5,1000,[ ("Water",0.5), ("Methanol",0.5) ])
 
-for v in S001.variables.values():
-    print(f"{v.fullName()} = {v.displayValue()} {v.displayUnit}")
+
+print("\Fix Temperature\n\n")
+f.mstr("S001").ftpz(100, 82.5,1000,[ ("Water",0.5), ("Methanol",0.5) ])
 
 f.solve()
 
 for v in S001.variables.values():
     print(f"{v.fullName()} = {v.displayValue()} {v.displayUnit}")
 
+
+print("\Bubble Point\n\n")
+
+f.mstr("S001").fpx(100, 1000,[ ("Water",0.5), ("Methanol",0.5) ])
+f.solve()
+for v in S001.variables.values():
+    print(f"{v.fullName()} = {v.displayValue()} {v.displayUnit}")
+
+print("\nDew Point\n\n")
+f.mstr("S001").fpy(100, 1000,[ ("Water",0.5), ("Methanol",0.5) ])
+f.solve()
+for v in S001.variables.values():
+    print(f"{v.fullName()} = {v.displayValue()} {v.displayUnit}")
+
 #print(S001)
-
-
 
 
 '''
