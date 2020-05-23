@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath('../pypedream'))
+
 from pypedream import  AlgebraicSystem, Equation, Variable,  Addition, Subtraction, Multiplication, Division, Unit, SI, METRIC,PhysicalDimension, UnitSet, UnitSetDefault, UnitSetSI
 from pypedream.thermodynamics import PureComponentFunctionFactory, Substance,ThermodynamicSystem, Properties, PhysicalConstants
 from pypedream.database import  purecomponents as pcdb
