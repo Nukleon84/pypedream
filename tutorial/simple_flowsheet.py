@@ -16,7 +16,7 @@ S001=f.mstr("S001")
 #f.mstr("S001").fvpz(100, 0.5,1000,[ ("Water",0.5), ("Methanol",0.5) ])
 
 
-print("\Fix Temperature\n\n")
+print("\nFix Temperature\n\n")
 f.mstr("S001").ftpz(100, 82.5,1000,[ ("Water",0.5), ("Methanol",0.5) ])
 
 f.solve()
@@ -25,7 +25,7 @@ for v in S001.variables.values():
     print(f"{v.fullName()} = {v.displayValue()} {v.displayUnit}")
 
 
-print("\Bubble Point\n\n")
+print("\nBubble Point\n\n")
 
 f.mstr("S001").fpx(100, 1000,[ ("Water",0.5), ("Methanol",0.5) ])
 f.solve()
@@ -37,6 +37,23 @@ f.mstr("S001").fpy(100, 1000,[ ("Water",0.5), ("Methanol",0.5) ])
 f.solve()
 for v in S001.variables.values():
     print(f"{v.fullName()} = {v.displayValue()} {v.displayUnit}")
+
+
+print("\nFix Temperature 25°C\n\n")
+f.mstr("S001").ftpz(100,25,1000,[ ("Water",0.5), ("Methanol",0.5) ])
+
+f.solve()
+
+for v in S001.variables.values():
+    print(f"{v.fullName()} = {v.displayValue()} {v.displayUnit}")
+
+
+for T in range(25,120):
+    f.mstr("S001").ftpz(100,T,1000,[ ("Water",0.5), ("Methanol",0.5) ])
+    f.solve(silent=True)
+    print(f"T = {S001.getVar('T').quantity()}, VF = {S001.getVar('VF').value}")
+
+
 
 #print(S001)
 

@@ -38,10 +38,10 @@ class Flowsheet(BaseElement):
 
         return
     
-    def solve(self):
+    def solve(self, silent=False):
         instance= AlgebraicSystem(self.name)
         self.instantiate(instance)
-        solver= NewtonSolver()
+        solver= NewtonSolver(silent=silent)
         status=solver.solve(instance)
         return status
 

@@ -8,15 +8,17 @@ from .fill_jacobian import fillJacobian
 
 class NewtonSolver(object):
     
-    def __init__(self, maxIter=20, tolerance=1e-6, factor=1.0, _callback=None):
+    def __init__(self, maxIter=20, tolerance=1e-6, factor=1.0, _callback=None, silent=False):
         self.maximumIterations=maxIter
         self.tolerance=tolerance
         self.iterCallback= _callback
         self.factor=factor
+        self.silent=silent
         return
 
     def log(self, msg):
-        print(msg)
+        if(not self.silent):
+            print(msg)
         return
  
     def solve(self, system: AlgebraicSystem):
@@ -36,7 +38,7 @@ class NewtonSolver(object):
 
         labels=["Iter","Norm","Residual","Flags","Comment"]
         comment=''
-        print(f"{labels[0]:<4} {'': <10s} {labels[1]:<12} {'': <10s} {labels[2]:<12} {'': <10s} {labels[3]:<6} {'': <10s} {labels[4]:<12}")
+        self.log(f"{labels[0]:<4} {'': <10s} {labels[1]:<12} {'': <10s} {labels[2]:<12} {'': <10s} {labels[3]:<6} {'': <10s} {labels[4]:<12}")
         for i in range(self.maximumIterations):
             A,b= fillJacobian(system,b)
             delta= sparseLinearSolve(A,-b)
