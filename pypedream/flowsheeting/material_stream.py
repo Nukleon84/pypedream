@@ -104,7 +104,37 @@ class MaterialStream(BaseElement):
             self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
 
         self.init()
-        return self          
+        return self  
+
+    def ftx(self, f,t, x):     
+        self.P.unfix()   
+        self.F.fixValue(f)
+        self.VF.fixValue(0.0)
+        self.T.fixValue(t)
+        
+        for c in self.system.components:
+             self.getVar(f"z[{c.id}]").fixValue(0)
+
+        for pair in x:
+            self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+
+        self.init()
+        return self  
+
+    def fty(self, f,t, y):   
+        self.P.unfix()   
+        self.F.fixValue(f)
+        self.VF.fixValue(1.0)
+        self.T.fixValue(t)
+        
+        for c in self.system.components:
+             self.getVar(f"z[{c.id}]").fixValue(0)
+
+        for pair in y:
+            self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+
+        self.init()
+        return self                 
     
     def init(self):
         if(self.T.isFixed and self.P.isFixed):

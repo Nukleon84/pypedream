@@ -57,6 +57,7 @@ fig = px.scatter(df, x =df['Temperature'],y=df['Property (raw)'])
 fig.update_xaxes(title="Temperature [°C]")
 fig.update_yaxes(title=f"{p.name} [{fdesc.yUnit}]")
 
+print(fig)
 st.plotly_chart(figure_or_data=fig)
 
 if st.checkbox("Show raw data"):
