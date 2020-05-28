@@ -27,7 +27,7 @@ class Expression(object):
         self.needsEval=True
         for c in self.children:
             c.reset()
-            
+                
     def print(self):
          raise NotImplementedError
 
@@ -189,10 +189,22 @@ class Multiplication(BinaryExpression):
        super(Multiplication,self).__init__('×',left,right)
 
     def fullEvaluate(self)->float:
-        return self.left.eval()*self.right.eval()   
+        u=self.left.eval()
+        
+        if(abs(u)<1e-12):
+            return 0.0
+        v=self.right.eval()        
+        return u*v  
     
     def diff(self, variable)->float:
-        return self.left.diff(variable)*self.right.eval()+self.left.eval()*self.right.diff(variable)
+        u=self.left.eval()
+        v=self.right.eval()
+        if(abs(u)<1e-12):
+            return self.left.diff(variable)*v
+        elif(abs(v)<1e-12):
+            return u*self.right.diff(variable)
+        else:
+            return self.left.diff(variable)*v+u*self.right.diff(variable)
     def __str__(self):
         return self.print()
     def __repr__(self):        
@@ -204,10 +216,19 @@ class Division(BinaryExpression):
        super(Division,self).__init__('/',left,right)
 
     def fullEvaluate(self)->float:
-        return self.left.eval()/self.right.eval()     
+        u= self.left.eval()
+        if(abs(u)<1e-12):
+            return 0.0
+        v=self.right.eval() 
+        return u/v     
     
     def diff(self, variable)->float:
-        return (self.left.diff(variable)*self.right.eval()-self.left.eval()*self.right.diff(variable))/ (self.right.eval()**2)
+        u=self.left.eval()
+        v=self.right.eval()
+        if(abs(u)<1e-12):
+            return (self.left.diff(variable)*v)/ (v**2)
+        else:
+            return (self.left.diff(variable)*v-u*self.right.diff(variable))/ (v**2)
     def __str__(self):
         return self.print()
     def __repr__(self):        

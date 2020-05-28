@@ -5,11 +5,12 @@ class Equation(object):
     def __init__(self, rhs, name=""):
         self.name=name
         self.rhs=rhs
-        self.variables=[]
+        self.variables=[]     
         self.exploreVariables(rhs)
         return
     
-    def exploreVariables(self, expr):
+    def exploreVariables(self, expr):       
+
         if(isinstance(expr,Variable)):
             if expr not in self.variables:
                 self.variables.append(expr)
@@ -22,7 +23,8 @@ class Equation(object):
         return self.rhs.eval()
     
     def reset(self):
-        return self.rhs.reset()
+        self.rhs.reset()     
+        return 
 
     def __str__(self):
         return f"{self.rhs} = {self.residual()}"

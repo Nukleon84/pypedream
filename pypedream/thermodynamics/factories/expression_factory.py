@@ -2,6 +2,8 @@ from ...unitsofmeasure.unitset import UnitSetSI,UnitSetDefault
 from ...unitsofmeasure.unitset import PhysicalDimension
 from ...expressions import Variable
 from .. import PhysicalConstants, Properties, PureComponentFunction
+from ..data.enums import ActivityMethod
+from ..models import GammaNRTL
 
 class ExpressionFactory(object):
 
@@ -9,8 +11,11 @@ class ExpressionFactory(object):
         self.system= system
     
     def EquilibriumCoefficient(self,c, T,P,x,y):
-        Keq= self.VaporPressure(c,T)/P
-        return Keq
+        if(self.system.equilibrium.activityMethod== ActivityMethod.NRTL):
+            return GammaNRTL(self.system, T,x,c)*self.VaporPressure(c,T)/P
+
+        #Default= Ideal        
+        return self.VaporPressure(c,T)/P
 
     def VaporPressure(self, comp, T):        
         fdesc=comp.functions[Properties.VaporPressure]        

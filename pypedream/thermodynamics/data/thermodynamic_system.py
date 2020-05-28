@@ -3,9 +3,10 @@ from .equilibrium_method import EquilibriumMethod
 from .enthalpy_method import EnthalpyMethod, PureEnthalpy
 from .enums import ActivityMethod, FugacityMethod, EquilibriumApproach, EquationOfState, AllowedPhases, ReferencePhase, PhysicalConstants
 from .substance import Substance
+from .binary_parameters import BinaryParameterSet, BinaryParameterSetType
 from ..factories.variable_factory import VariableFactory
 from ...unitsofmeasure.unitset import PhysicalDimension
-
+from ...database.nrtl_database import fillNRTL
 from ..factories.expression_factory import ExpressionFactory
 
 class ThermodynamicSystem(object):
@@ -20,8 +21,18 @@ class ThermodynamicSystem(object):
         self.equilibrium= EquilibriumMethod()
         self.modifyDefaults()
         self.enthalpyMethod= EnthalpyMethod()
+        self.binaryParameters={}
         return
-    
+
+    def fill(self):
+        if(self.baseMethod=="NRTL"):            
+            if("NRTL" not in self.binaryParameters):
+                self.binaryParameters[BinaryParameterSetType.NRTL]= BinaryParameterSet("NRTL", BinaryParameterSetType.NRTL, self)
+            fillNRTL(self)
+        return
+
+    def getNumberOfComponents(self):
+        return len(self.components)
     def modifyDefaults(self):
         if(self.baseMethod=="NRTL"):
             self.equilibrium.activityMethod= ActivityMethod.NRTL

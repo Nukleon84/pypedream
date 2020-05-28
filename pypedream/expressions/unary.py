@@ -46,5 +46,6 @@ class Par(UnaryExpression):
 
     def diff(self, variable):
         return self.argument.diff(variable)       
-
+    def print(self):
+        return f"[{self.argument.print()}]"
     

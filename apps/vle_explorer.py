@@ -13,10 +13,13 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-sys= ThermodynamicSystem("Test")
+sys= ThermodynamicSystem("Test","NRTL")
 sys.addComponent(pcdb.Water())
-sys.addComponent(pcdb.Isopropanol())
+sys.addComponent(pcdb.Ethanol())
 sys.addComponent(pcdb.Methanol())
+sys.addComponent(pcdb.Acetone())
+sys.addComponent(pcdb.Isopropanol())
+sys.fill()
 
 T= Variable("T", 273.15, SI.K)
 T.displayUnit=METRIC.C
@@ -48,14 +51,18 @@ def draw_vle(c1,c2, t,p,steps, mode):
             f.solve(silent=True)
             yb.append(f.mstr("S001").getVar("T").displayValue())
 
-            f.mstr("S001").fpy(1, p,[ (c1.id,xi), (c2.id, 1-xi) ])
-            f.solve(silent=True)
-            yd.append(f.mstr("S001").getVar("T").displayValue())
         if(mode=="Isothermal"):
             f.mstr("S001").ftx(1, t,[ (c1.id,xi), (c2.id, 1-xi) ])
             f.solve(silent=True)
             yb.append(f.mstr("S001").getVar("P").displayValue())
 
+    for i in range(steps):
+        xi= i/(steps-1)        
+        if(mode=="Isobaric"):         
+            f.mstr("S001").fpy(1, p,[ (c1.id,xi), (c2.id, 1-xi) ])
+            f.solve(silent=True)
+            yd.append(f.mstr("S001").getVar("T").displayValue())
+        if(mode=="Isothermal"):
             f.mstr("S001").fty(1, t,[ (c1.id,xi), (c2.id, 1-xi) ])
             f.solve(silent=True)
             yd.append(f.mstr("S001").getVar("P").displayValue())

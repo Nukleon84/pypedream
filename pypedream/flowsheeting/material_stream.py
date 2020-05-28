@@ -29,6 +29,8 @@ class MaterialStream(BaseElement):
         self.y=[]
         self.z=[]
         self.K=[]
+       
+
         for c in system.components:
             zi=system.variableFactory.createVariable("z",c.id,"Mixed Molar composition",PhysicalDimension.MolarFraction)                        
             xi=system.variableFactory.createVariable("x",c.id,"Liquid Molar composition",PhysicalDimension.MolarFraction)
@@ -37,12 +39,14 @@ class MaterialStream(BaseElement):
             self.addVar(zi)
             self.addVar(xi)            
             self.addVar(yi)
-
             self.x.append(xi)
             self.y.append(yi)
             self.z.append(zi)
+
+        for c in system.components:            
             Ki=Alias(f"K[{c.id}]",self.system.expressionFactory.EquilibriumCoefficient(c,self.T,self.P,self.x,self.y))
             self.K.append(Ki)
+
         self.rachfordRice=self.__generateRachfordRice()
         return
     
@@ -57,6 +61,8 @@ class MaterialStream(BaseElement):
 
         for pair in z:
             self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+            self.getVar(f"x[{pair[0]}]").value=pair[1]
+            self.getVar(f"y[{pair[0]}]").value=pair[1]
 
         self.init()
         return self
@@ -72,6 +78,8 @@ class MaterialStream(BaseElement):
 
         for pair in z:
             self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+            self.getVar(f"x[{pair[0]}]").value=pair[1]
+            self.getVar(f"y[{pair[0]}]").value=pair[1]
 
         self.init()
         return self        
@@ -87,6 +95,8 @@ class MaterialStream(BaseElement):
 
         for pair in x:
             self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+            self.getVar(f"x[{pair[0]}]").value=pair[1]
+            self.getVar(f"y[{pair[0]}]").value=pair[1]
 
         self.init()
         return self  
@@ -102,6 +112,8 @@ class MaterialStream(BaseElement):
 
         for pair in y:
             self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+            self.getVar(f"x[{pair[0]}]").value=pair[1]
+            self.getVar(f"y[{pair[0]}]").value=pair[1]
 
         self.init()
         return self  
@@ -117,6 +129,8 @@ class MaterialStream(BaseElement):
 
         for pair in x:
             self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+            self.getVar(f"x[{pair[0]}]").value=pair[1]
+            self.getVar(f"y[{pair[0]}]").value=pair[1]
 
         self.init()
         return self  
@@ -132,11 +146,14 @@ class MaterialStream(BaseElement):
 
         for pair in y:
             self.getVar(f"z[{pair[0]}]").fixValue(pair[1])
+            self.getVar(f"x[{pair[0]}]").value=pair[1]
+            self.getVar(f"y[{pair[0]}]").value=pair[1]
 
         self.init()
         return self                 
     
     def init(self):
+        
         if(self.T.isFixed and self.P.isFixed):
             self.flashP(self.VF)
         if(self.VF.isFixed and self.P.isFixed):

@@ -102,6 +102,14 @@ class PhaseState(Enum):
         DewPoint= auto() 
         Vapor= auto() 
 
+class BinaryParameterSetType(Enum):    
+        NRTL= auto() 
+        Wilson= auto() 
+        DVIJ= auto() 
+        UNIQUAC= auto() 
+        MODUNIQUC= auto()    
+        SRK=auto()     
+
 propertyToName={
      Properties.HeatOfVaporization:"HVAP",
      Properties.IdealGasHeatCapacity:"CPID",

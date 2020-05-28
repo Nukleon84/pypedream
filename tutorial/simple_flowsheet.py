@@ -5,11 +5,15 @@ sys.path.append(os.path.abspath('../pypedream'))
 from pypedream import MaterialStream, Flowsheet, ThermodynamicSystem
 import pypedream.database.purecomponents as pcdb
 
-sys= ThermodynamicSystem("Test")
+sys= ThermodynamicSystem("Test", "NRTL")
 sys.addComponent(pcdb.Water())
-sys.addComponent(pcdb.Isopropanol())
+sys.addComponent(pcdb.Ethanol())
 sys.addComponent(pcdb.Methanol())
-
+sys.addComponent(pcdb.Acetone())
+sys.addComponent(pcdb.Isopropanol())
+sys.addComponent(pcdb.Benzene())
+sys.addComponent(pcdb.Toluene())
+sys.fill()
 f= Flowsheet("Test",sys)
 S001=f.mstr("S001")
 
